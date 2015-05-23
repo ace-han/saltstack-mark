@@ -1,0 +1,1 @@
+salt-api -d --pid-file /var/run/salt-api.pid --log-file /var/log/salt/api

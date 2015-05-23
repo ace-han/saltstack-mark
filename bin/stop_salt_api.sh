@@ -1,0 +1,1 @@
+ps -ef | grep salt-api | awk '{print $2}' | xargs kill
