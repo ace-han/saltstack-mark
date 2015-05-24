@@ -1,11 +1,11 @@
-* Install
+# Install
 ```sh
 sudo add-apt-repository ppa:saltstack/salt
 sudo apt-get update
 sudo apt-get install salt-master
 ```
-* Configuration
-## change user in `/etc/salt/master`
+# Configuration
+change user in `/etc/salt/master`
 vi `/etc/salt/master`
 ```yaml
 user: xxx
@@ -13,23 +13,25 @@ file_roots:
    base:
      - /xxx/yyy/zzz
 ```
-* change folder permission
+# change folder permission
 ```sh
 chown -R user /etc/salt /var/cache/salt /var/log/salt /var/run/salt
 service salt-master restart
 ```
-* Keys
+# Keys
 ```sh
 salt-key -L
 salt-key -a xxx 
 salt-key -A #(for all)
 ```
 
-* Activate netapi moduel(Salt-Api)
+# Activate netapi moduel(Salt-Api)
+
 > Since the Salt-Api project has been merged into SaltStack in release 2014.7.0, 
 > so you can use the salt-api with SaltStack 2014.7.0 release
+
 No need to install another `salt-api`, just do below
-## Create salt-api bin cmd
+* Create salt-api bin cmd
 ```sh
 root@acebuild-sfo:/usr/lib/python2.7/dist-packages/salt# vi /usr/bin/salt-api
 ```
@@ -47,7 +49,7 @@ if __name__ == '__main__':
 root@acebuild-sfo:/usr/lib/python2.7/dist-packages/salt# ll /usr/bin/salt-api
 -rwxr-xr-x 1 root root 116 May 11 08:59 /usr/bin/salt-api*
 ```
-## Mysql databases setup
+* Mysql databases setup
 ```sql
 CREATE DATABASE `saltstack` CHARACTER SET utf8 COLLATE utf8_general_ci;
 GRANT ALL ON `saltstack`.* TO `xxx`@localhost IDENTIFIED BY 'xxx';
@@ -68,8 +70,10 @@ CREATE TABLE `users` (
 
 INSERT INTO users VALUES (NULL, 'yyy', SHA2('yyy', 256));
 ```
-## Section `external_auth` in master config file with mysql (pam is sth that I'm not familiar with...)
-### `/etc/salt/master.d/eauth.conf`
+* Section `external_auth` in master config file with mysql (pam is sth that I'm not familiar with...)
+
+> `/etc/salt/master.d/eauth.conf`
+
 ```yaml
 mysql_auth:
   hostname: localhost
@@ -87,7 +91,8 @@ external_auth:
       - '@wheel'
 ```
 
-## Install MySQLdb-python in the venv for salt-api(since salt-api merge into salt-master, they share the same venv)
+* Install MySQLdb-python in the venv for salt-api(since salt-api merge into salt-master, they share the same venv)
+
 ```sh
 pyenv shell system # this maybe the most suitable case...
 pip install MySQLdb-python
@@ -95,7 +100,7 @@ pip install MySQLdb-python
 sudo apt-get install python-mysqldb
 ```
 
-## Install Cherrypy in the venv for salt-api(since salt-api merge into salt-master, they share the same venv)
+* Install Cherrypy in the venv for salt-api(since salt-api merge into salt-master, they share the same venv)
 ```sh
 pyenv shell system # this maybe the most suitable case...
 pip install cherrypy
@@ -106,8 +111,10 @@ pyenv shell system # this maybe the most suitable case...
 python setup.py install
 ```
 
-## Master config for rest_cherry to run local only
-### `/etc/salt/master.d/api.conf`
+* Master config for rest_cherry to run local only
+
+>  `/etc/salt/master.d/api.conf`
+
 ```yaml
 rest_cherrypy:
   port: 8000
@@ -115,7 +122,8 @@ rest_cherrypy:
   disable_ssl: true
 ```
 
-### nginx conf proxy for this rest_cherrypy
+>  nginx conf proxy for this rest_cherrypy
+
 ```sh
 upstream saltapi {
   server localhost:8000;
@@ -148,12 +156,14 @@ server {
 }
 ```
 
-### Start salt-api deamon
+* Start salt-api deamon
+
 ```sh
 salt-api -d --pid-file /var/run/salt-api.pid --log-file /var/log/salt/api
 ```
 
-### Test
+* Test
+
 ```sh
 curl -k https://YOURAPI.DOMAIN/login \
         -H "Accept: application/x-yaml" \
