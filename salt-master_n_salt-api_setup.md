@@ -1,23 +1,23 @@
-h1 salt-master setup
-
 * Install
+```sh
 sudo add-apt-repository ppa:saltstack/salt
 sudo apt-get update
 sudo apt-get install salt-master
-
+```
 * Configuration
-## change user in /etc/salt/master
-vi /etc/salt/master
-*** user: xxx
-*** file_roots:
+## change user in `/etc/salt/master`
+vi `/etc/salt/master`
+```yaml
+user: xxx
+file_roots:
    base:
      - /xxx/yyy/zzz
-
+```
 * change folder permission
+```sh
 chown -R user /etc/salt /var/cache/salt /var/log/salt /var/run/salt
 service salt-master restart
-
-
+```
 * Keys
 ```sh
 salt-key -L
@@ -26,9 +26,9 @@ salt-key -A #(for all)
 ```
 
 * Activate netapi moduel(Salt-Api)
-		Since the Salt-Api project has been merged into SaltStack in release 2014.7.0, so you can use the salt-api with SaltStack 2014.7.0 release
-		no need to install another salt-api 
-		just do below
+> Since the Salt-Api project has been merged into SaltStack in release 2014.7.0, 
+> so you can use the salt-api with SaltStack 2014.7.0 release
+No need to install another `salt-api`, just do below
 ## Create salt-api bin cmd
 ```sh
 root@acebuild-sfo:/usr/lib/python2.7/dist-packages/salt# vi /usr/bin/salt-api
@@ -47,7 +47,6 @@ if __name__ == '__main__':
 root@acebuild-sfo:/usr/lib/python2.7/dist-packages/salt# ll /usr/bin/salt-api
 -rwxr-xr-x 1 root root 116 May 11 08:59 /usr/bin/salt-api*
 ```
-
 ## Mysql databases setup
 ```sql
 CREATE DATABASE `saltstack` CHARACTER SET utf8 COLLATE utf8_general_ci;
@@ -69,7 +68,6 @@ CREATE TABLE `users` (
 
 INSERT INTO users VALUES (NULL, 'yyy', SHA2('yyy', 256));
 ```
-
 ## Section `external_auth` in master config file with mysql (pam is sth that I'm not familiar with...)
 ### `/etc/salt/master.d/eauth.conf`
 ```yaml
@@ -125,13 +123,13 @@ upstream saltapi {
 
 server {
   listen 80;
-  server_name salt-api.madeinace.com;
-  return 301 https://salt-api.madeinace.com$request_uri;
+  server_name YOURAPI.DOMAIN;
+  return 301 https://YOURAPI.DOMAIN$request_uri;
 }
 
 server {
   listen 443 ssl;         # e.g., listen 192.168.1.1:80; In most cases *:80 is a good idea
-  server_name salt-api.madeinace.com;     # e.g., server_name source.example.com;
+  server_name YOURAPI.DOMAIN;     # e.g., server_name source.example.com;
 
   server_tokens off;     # don't show the version number, a security best practice
   ssl_certificate /etc/pki/tls/certs/localhost.crt;
@@ -151,13 +149,17 @@ server {
 ```
 
 ### Start salt-api deamon
+```sh
 salt-api -d --pid-file /var/run/salt-api.pid --log-file /var/log/salt/api
+```
 
 ### Test
-curl -k https://salt-api.madeinace.com/login \
+```sh
+curl -k https://YOURAPI.DOMAIN/login \
         -H "Accept: application/x-yaml" \
         -d username='xxx' \
         -d password='xxx' \
         -d eauth='mysql'
 
-curl -sSk https://salt-api.madeinace.com/login -H 'Accept: application/x-yaml' -d username=salt -d password=salt -d eauth=mysql
+curl -sSk https://YOURAPI.DOMAIN/login -H 'Accept: application/x-yaml' -d username=salt -d password=salt -d eauth=mysql
+```
