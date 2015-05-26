@@ -25,7 +25,7 @@ salt-key -a xxx
 salt-key -A #(for all)
 ```
 
-# Activate netapi moduel(Salt-Api)
+# Activate netapi module(Salt-Api)
 
 > Since the Salt-Api project has been merged into SaltStack in release 2014.7.0, 
 > so you can use the salt-api with SaltStack 2014.7.0 release
